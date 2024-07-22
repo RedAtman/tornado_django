@@ -1,0 +1,18 @@
+<html>
+
+<head>
+  <title>template demo</title>
+</head>
+
+<body>
+  <ul>
+    {% for item in items %}
+    <li>
+        <input value={{item.name}} name={{item.name}} type="text" />
+        {{item.pk}} {{item.name}} {{item.desc}}
+    </li>
+    {% end %}
+  </ul>
+</body>
+
+</html>

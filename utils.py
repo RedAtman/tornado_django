@@ -35,7 +35,7 @@ def init_db(db_file: str = "db.sqlite3"):
 
 def init_django(settings_module: str = "settings.dev"):
 
-    # Init settings method 1: With settings file
+    # Init settings method 1: With settings file(Supports full django project)
     # allow async
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_module)

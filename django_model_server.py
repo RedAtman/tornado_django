@@ -1,13 +1,3 @@
-"""
-**Asynchronous Programming Based on Thread Pool**
-
-Supports the use of other libraries in code that do not support synchronization.
-
-If the other libraries being used, such as `time` and `urllib`, do not support asynchronous operations, the response will still be blocking.
-
-In Tornado, there is a decorator that can use `ThreadPoolExecutor` to turn blocking processes into non-blocking ones. The principle is to start a separate thread outside of Tornado's own thread to execute the blocking program, thereby making Tornado non-blocking.
-"""
-
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -24,8 +14,39 @@ init_django()
 from db._models import Schema
 
 
-# Define the class that will respond to the URL
-class AsyncHandler(tornado.web.RequestHandler):
+class OriginalAsyncHandler(tornado.web.RequestHandler):
+    """Make the task non-blocking use python's(>=3.7) async and await"""
+
+    class Obj:
+
+        def __init__(self, pk, name, desc):
+            self.pk = pk
+            self.name = name
+            self.desc = desc
+
+    async def get(self):
+        print(1)
+        # await asyncio.sleep(0.99)
+        # time.sleep(5)
+        print(2)
+        # self.write("hello")
+        res = [self.Obj(i, "a", "b") for i in range(10)]
+        print(res)
+        self.render(
+            "templates/index.html",
+            items=res,
+        )
+
+
+class BlockingToAsyncHandler(tornado.web.RequestHandler):
+    """Make the task non-blocking, Supports the use of other libraries in code that do not support synchronization.
+
+    **Asynchronous Programming Based on Thread Pool**
+
+    If the other libraries being used, such as `time` and `urllib`, do not support asynchronous operations, the response will still be blocking.
+
+    In Tornado, there is a decorator that can use `ThreadPoolExecutor` to turn blocking processes into non-blocking ones. The principle is to start a separate thread outside of Tornado's own thread to execute the blocking program, thereby making Tornado non-blocking.
+    """
 
     # Must define an executor thread pool for decorator run_on_executor to work
     executor = ThreadPoolExecutor(max_workers=10)
@@ -60,7 +81,7 @@ class AsyncHandler(tornado.web.RequestHandler):
 # map the Urls to the class
 application = tornado.web.Application(
     [
-        (r"/", AsyncHandler),
+        (r"/", BlockingToAsyncHandler),
     ]
 )
 
